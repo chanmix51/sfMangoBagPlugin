@@ -6,28 +6,21 @@ class sfMangoBag implements ArrayAccess, Iterator
   protected $collection;
   protected $data = array();
 
-  public function __construct(Doctrine_Record $object)
+  public function __construct($collection)
   {
-    $this->object = $object;
-    $this->collection = sfContext::getInstance()
-                          ->getDatabaseManager()
-                          ->getDatabase('mongo')
-                          ->connect()
-                          ->selectCollection('mangoBag')
-                          ;
-
-    $this->data = $this->collection->findOne(array('_doctrine_info' => array('id' => $this->object->getId(), 'type' => get_class($this->object))));
-
+    $this->collection = $collection;
   }
 
-  protected function fetch($array)
+  public function fetchFromDoctrineObject(Doctrine_Record $object)
   {
-    $mongo_iterator = $this->getCollection()->find($array);
+    $this->object = $object;
+    $this->data = $this->collection->findOne(array('_doctrine_info' => array('id' => $object->getId(), 'type' => get_class($object))));
+  }
 
-    foreach ($mongo_iterator as $key => $value)
-    {
-      $this->data[$key] = $value;
-    }
+  public function hydrate(Doctrine_Record $object, $data)
+  {
+    $this->object = $object;
+    $this->data = $data;
   }
 
   protected function getCollection()
