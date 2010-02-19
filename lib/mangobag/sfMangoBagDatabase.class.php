@@ -76,15 +76,18 @@ class sfMangoBagDatabase extends sfDatabase
 
   public function shutdown()
   {
-    try
+    if (!is_null($this->database))
     {
-      $this->connection->close();
-      $this->database = NULL;
-      $this->setBound(FALSE);
-    }
-    catch (MongoConnectionException $e)
-    {
-      throw new sfDatabaseException(sprintf('Error while disconnecting from mongodb, driver said "%s"'), $e->getMessage());
+      try
+      {
+        $this->connection->close();
+        $this->database = NULL;
+        $this->setBound(FALSE);
+      }
+      catch (MongoConnectionException $e)
+      {
+        throw new sfDatabaseException(sprintf('Error while disconnecting from mongodb, driver said "%s"'), $e->getMessage());
+      }
     }
   }
 

@@ -15,12 +15,17 @@ class sfMangoBag implements ArrayAccess, Iterator
   {
     $this->object = $object;
     $this->data = $this->collection->findOne(array('_doctrine_info' => array('id' => $object->getId(), 'type' => get_class($object))));
+
+    $this->data = count($this->data) ? $this->data : array('_doctrine_info' => array('id' => $object->getId(), 'type' => get_class($object)));
+    return $this;
   }
 
   public function hydrate(Doctrine_Record $object, $data)
   {
     $this->object = $object;
     $this->data = $data;
+
+    return $this;
   }
 
   protected function getCollection()
@@ -41,9 +46,20 @@ class sfMangoBag implements ArrayAccess, Iterator
     $this->getCollection()->save($this->data);
   }
 
+  public function delete()
+  {
+    $this->getCollection()->drop($this->data);
+    $this->__destruct();
+  }
+
   public function getData()
   {
     return $this->data;
+  }
+
+  public function getObjectType()
+  {
+    return $this->data['_doctrine_info']['type'];
   }
 
   public function offsetGet($key)
