@@ -73,9 +73,9 @@ class sfMangoBagFinder
 
     foreach($mg_iterator as $result)
     {
-      $hash = md5(get_class($object).$object->getId());
+      $hash = md5($result['_doctrine_info']['type'].$result['_doctrine_info']['id']);
       $mango_bags[] = $this->getMangoBag()->hydrate($sorted_objects[$hash], $result);
-      $sorted_objects[$hash] = null;
+      unset($sorted_objects[$hash]);
     }
 
     foreach ($sorted_objects as $object)

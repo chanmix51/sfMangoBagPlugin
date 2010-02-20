@@ -26,7 +26,7 @@ class sfMangoBag implements ArrayAccess, Iterator
   public function hydrate(Doctrine_Record $object, $data)
   {
     $this->object = $object;
-    $this->data = array_merge(array('_doctrine_info' => array('id' => $object->getId(), 'type' => get_class($object))), $data);
+    $this->data = array_merge(array('_doctrine_info' => array('id' => (string) $object->getId(), 'type' => get_class($object))), $data);
 
     return $this;
   }
