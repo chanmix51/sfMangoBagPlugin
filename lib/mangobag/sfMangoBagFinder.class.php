@@ -69,7 +69,7 @@ class sfMangoBagFinder
       $sorted_objects[$object->getId()] = $object;
     }
 
-    $mg_iterator = self::$collection->find(array('_doctrine_info' => array('$in' => $in)));
+    $mg_iterator = $this->collection->find(array('_doctrine_info' => array('$in' => $in)));
 
     foreach($mg_iterator as $result)
     {
