@@ -76,6 +76,12 @@ class sfMangoBagFinder
       $mango_bag = $this->getMangoBag()->hydrate($sorted_objects[$result['_doctrine_info']['id']], $result);
 
       $mango_bags[] = $mango_bag;
+      $sorted_objects[$result['_doctrine_info']['id']] = null;
+    }
+
+    foreach ($sorted_objects as $object)
+    {
+      $mango_bags[] = $this->getMangoBag()->hydrate($object, array('tags' => array()));
     }
 
     return $mango_bags;
@@ -103,7 +109,7 @@ class sfMangoBagFinder
       {
         throw new InvalidArgumentException(sprintf('No such Doctrine object type="%s", id="%s".', $type, $id));
       }
-      $mango_bag = $this->getMangoBag()->hydrate($object, array('tags' => array()));
+      $mango_bag = $this->getMangoBag()->hydrate($object, array());
     }
 
     return $mango_bag;
