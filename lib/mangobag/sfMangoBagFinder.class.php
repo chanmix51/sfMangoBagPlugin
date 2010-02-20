@@ -12,7 +12,8 @@ class sfMangoBagFinder
     $db_manager = $event->getSubject()->getDatabaseManager();
     foreach ($db_manager->getNames() as $name)
     {
-      if ($connection = $db_manager->getDatabase($name) instanceof sfMangoBagDatabase)
+      $connection = $db_manager->getDatabase($name);
+      if ($connection instanceof sfMangoBagDatabase)
       {
         self::$database = $connection;
         return;
