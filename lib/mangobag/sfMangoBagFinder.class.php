@@ -3,8 +3,24 @@
 class sfMangoBagFinder
 {
 
+  protected static $database;
   protected $collection;
   protected $class_name;
+
+  public static function setDatabase(sfEvent $event)
+  {
+    $db_manager = $event->getSubject()->getDatabaseManager();
+    foreach ($db_manager->getNames() as $name)
+    {
+      if ($connection = $db_manager->getDatabase($name) instanceof sfMangoBagDatabase)
+      {
+        self::$database = $connection;
+        return;
+      }
+    }
+
+    throw new sfMangoBagException(sprintf('No mongoDB database found in the databases.yml.'));
+  }
 
   protected function __construct()
   {
@@ -21,11 +37,9 @@ class sfMangoBagFinder
       throw new InvalidArgumentException(sprintf('Finder must be a child of "sfMangoBagFinder", "%s" given.', get_class($finder)));
     }
 
-    $finder->collection = sfContext::getInstance()
-      ->getDatabaseManager()
-      ->getDatabase('mongo')
+    $finder->collection = self::$database
       ->connect()
-      ->selectCollection('mangoBag')
+      ->selectCollection(sfConfig::get('app_sfMangoBagPlugin_collection_name', 'mangoBag'))
       ;
     $finder->class_name = $class_name;
 
