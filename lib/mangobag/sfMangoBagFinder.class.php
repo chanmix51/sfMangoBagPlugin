@@ -49,7 +49,7 @@ class sfMangoBagFinder
 
   public function createMangoBag(Doctrine_Record $object)
   {
-    return $this->getMangoBag()->hydrate($object, array('tags' => array()));
+    return $this->getMangoBag()->hydrate($object, array());
   }
 
   public function findFromDoctrineObject(Doctrine_Record $object)
@@ -66,22 +66,21 @@ class sfMangoBagFinder
     foreach($objects as $object)
     {
       $in[] = array('id' => $object->getId(), 'type' =>get_class($object));
-      $sorted_objects[$object->getId()] = $object;
+      $sorted_objects[md5(get_class($object).$object->getId())] = $object;
     }
 
     $mg_iterator = $this->collection->find(array('_doctrine_info' => array('$in' => $in)));
 
     foreach($mg_iterator as $result)
     {
-      $mango_bag = $this->getMangoBag()->hydrate($sorted_objects[$result['_doctrine_info']['id']], $result);
-
-      $mango_bags[] = $mango_bag;
-      $sorted_objects[$result['_doctrine_info']['id']] = null;
+      $hash = md5(get_class($object).$object->getId());
+      $mango_bags[] = $this->getMangoBag()->hydrate($sorted_objects[$hash], $result);
+      $sorted_objects[$hash] = null;
     }
 
     foreach ($sorted_objects as $object)
     {
-      $mango_bags[] = $this->getMangoBag()->hydrate($object, array('tags' => array()));
+      $mango_bags[] = $this->createMangoBag($object);
     }
 
     return $mango_bags;

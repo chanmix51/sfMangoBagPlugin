@@ -16,14 +16,17 @@ class sfMangoBag implements ArrayAccess, Iterator
     $this->object = $object;
     $this->data = $this->collection->findOne(array('_doctrine_info' => array('id' => $object->getId(), 'type' => get_class($object))));
 
-    $this->data = count($this->data) ? $this->data : array('_doctrine_info' => array('id' => $object->getId(), 'type' => get_class($object)));
+    if (!count($this->data))
+    {
+      $this->hydrate($this->object);
+    }
     return $this;
   }
 
   public function hydrate(Doctrine_Record $object, $data)
   {
     $this->object = $object;
-    $this->data = $data;
+    $this->data = array_merge(array('_doctrine_info' => array('id' => $object->getId(), 'type' => get_class($object))), $data);
 
     return $this;
   }
@@ -37,10 +40,7 @@ class sfMangoBag implements ArrayAccess, Iterator
   {
     if (!array_key_exists('_doctrine_info', $this->data))
     {
-      $this->data['_doctrine_info'] = array(
-        'id' => $this->object->getId(),
-        'type' => get_class($this->object)
-        );
+      throw new Exception('Tried to save a mango bag without doctrine info.');
     }
 
     $this->getCollection()->save($this->data);
